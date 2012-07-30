@@ -4,7 +4,7 @@
 
 class ParallelTasks extends \Core_Daemon
 {
-    protected  $loop_interval = 1;
+    protected  $loop_interval = 5;
 
     /**
      * The only plugin we're using is a simple file-based lock to prevent 2 instances from running
@@ -32,29 +32,18 @@ class ParallelTasks extends \Core_Daemon
 	 */
 	protected function execute()
 	{
-        // Randomly Create Background Tasks
-        if (mt_rand(1, 20) == 1) {
-            $this->log("Creating Sleepy Task");
-            $this->task(array($this, 'task_sleep'));
-        }
-
-        if (mt_rand(1, 40) == 1) {
-            $sleepfor = mt_rand(60, 180);
-            $this->task(new BigTask($sleepfor, "I just woke up from my {$sleepfor} second sleep"));
-        }
-
-        // Randomly Shut Down -- Demonstrate daemon shutdown behavior while background tasks are running
-        if (mt_rand(1, 1000) == 1) {
-            $this->log("Shutting Down..");
-            $this->shutdown(true);
-        }
+        $m = new \Mongo();
+		$posts = $m->tampon->posts->find();
+		
+		foreach ($posts as $post) {
+			
+			$this->log("Processing item");
+			
+			$this->task(new BigTask($post));
+		}
 	}
 
-	protected function task_sleep()
-	{
-		$this->log("Sleeping For 20 Seconds");
-        sleep(20);
-	}
+	
 
 	/**
 	 * Dynamically build the file name for the log file. This simple algorithm 

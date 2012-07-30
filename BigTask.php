@@ -17,13 +17,10 @@ class BigTask implements \Core_ITask
      */
     private $daemon = null;
 
-    private $sleep_duration;
+    private $post;
 
-    private $wakeup_message;
-
-    public function __construct($sleep_duration, $wakeup_message = '') {
-        $this->sleep_duration = $sleep_duration;
-        $this->wakeup_message = $wakeup_message;
+    public function __construct($post) {
+        $this->post = $post;
     }
 
     /**
@@ -50,15 +47,10 @@ class BigTask implements \Core_ITask
      */
     public function start()
     {
-       // This is just going to sleep a really long time.
-       // I'll replace this with a better demo in a future version.
-       // The idea is that the easiest way to parallelize some code in your daemon is to pass a closure or callback to the task() method.
-       // But if you have a complex task that can get ugly and difficult to read and understand. In those cases, you can implement
-       // a Core_ITask object like this one.
-
-       $this->daemon->log("Starting BigTask...");
-       sleep($this->sleep_duration);
-       if ($this->wakeup_message)
-           $this->daemon->log($this->wakeup_message);
+       $this->daemon->log("Removed Mongo item...");
+       
+       $m = new \Mongo();
+       $m->tampon->posts->remove(array('_id' => $this->post['_id']));
+       
     }
 }
