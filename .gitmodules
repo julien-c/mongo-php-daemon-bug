@@ -1,0 +1,3 @@
+[submodule "PHP-Daemon"]
+	path = PHP-Daemon
+	url = git://github.com/shaneharter/PHP-Daemon.git
